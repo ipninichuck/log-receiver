@@ -1,13 +1,18 @@
-//server.js acts as the main script of the application
-//required Dependencies
-const http = require('http');
-const app = require('./app');
+const fs = require('fs');
+const server = require('http').createServer();
+const io = require('socket.io')(server);
+const bodyParser = require('body-parser');
 
-//sets the port that the RestAPI will listen on
+//create http server and set port to listen on
 const port = 9000;
 
-//creates an http server that utilizes the app.js script
-const server = http.createServer(app);
 
-//sets up the listener on the designated port
-server.listen(port);
+//When connected & Message received log the message to file
+io.on('connection', function(socket) {
+  socket.on('msg', function(data) {
+    let log = JSON.stringify(data);
+    fs.writeFileSync('log.json', log);
+  });
+});
+//set server to listen on specified port
+  server.listen(port);
